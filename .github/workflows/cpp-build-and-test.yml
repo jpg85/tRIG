@@ -1,0 +1,41 @@
+name: Build and Test
+
+on:
+  push:
+    branches:
+      - main
+  pull_request:
+    branches:
+      - main
+
+jobs:
+  build_ubuntu:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+      - name: Set up Conan
+        uses: conan-io/setup-conan@v1
+      - name: Conan Install
+        run: conan install . --output-folder build --build=missing
+      - name: Configure CMake
+        run: cmake -S . -B build -DCMAKE_BUILD_TYPE=Release
+      - name: Build with CMake
+        run: cmake --build build --config Release
+      - name: Run CMake tests
+        run: ctest --test-dir build --output-on-failure
+  build_windows:
+    runs-on: windows-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+      - name: Set up Conan
+        uses: conan-io/setup-conan@v1
+      - name: Conan Install
+        run: conan install . --output-folder build --build=missing
+      - name: Configure CMake
+        run: cmake -S . -B build -DCMAKE_BUILD_TYPE=Release
+      - name: Build with CMake
+        run: cmake --build build --config Release
+      - name: Run CMake tests
+        run: ctest --test-dir build --output-on-failure
